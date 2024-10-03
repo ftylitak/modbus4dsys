@@ -53,7 +53,7 @@
  //********* MODBUS STRUCTURES AND CONSTANTS ***************//
  //Initialization parameters
 #CONST
-  SERIAL:=1; //serial port to USE  0 for defualt port , 1 for serial port 1
+  SERIAL:=1; //serial port to USE  0 for default port , 1 for serial port 1 (Use _1_ when SB2 and SB3 on MOTG-RS485 are soldered to RX/TX respectively)
   SLAVE_ADDRESS:= 80; // it could be set here or in each telegram
   MOD_TIMEOUT := 3000; //  timeout read/write modbus in ms
   MOD_POOL_T := 350; // pooling time period modbus in ms
@@ -737,7 +737,7 @@ func Form1()
     img_SetAttributes(hndl, iLeddigitsTemp3, I_TOUCH_DISABLE);
     img_Show(hndl, iLeddigitsTemp4);  // show all digits at 0, only do this once
     img_SetAttributes(hndl, iLeddigitsTemp4, I_TOUCH_DISABLE);
-    
+
 
     // Winbutton1 1.0 generated 8/17/2018 2:50:15 AM
     img_ClearAttributes(hndl, iWinbutton1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once

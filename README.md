@@ -1,5 +1,5 @@
 # modbus4dsys
-This repository is an adaptation of the Modbus RTU protocol for the Diablo16 processor of 4d Systems. It is based on the library published at https://github.com/smarmengol/Modbus-Master-Slave-for-Arduino. The original library is a non-blocking and excelent implementation of Modbus RTU for Arduino. This port implements the Master function codes 1, 2, 3, 4, 5, 6, 15 and 16 of Modbus RTU protocol. 
+This repository is an adaptation of the Modbus RTU protocol for the Diablo16 processor of 4d Systems. It is based on the library published at https://github.com/smarmengol/Modbus-Master-Slave-for-Arduino. The original library is a non-blocking and excellent implementation of Modbus RTU for Arduino. This port implements the Master function codes 1, 2, 3, 4, 5, 6, 15 and 16 of Modbus RTU protocol. 
 Slave functionality, which is part of the original library, is not implemented. Check TODOs section if you are interested in porting the slave functionality.
 ## Getting Started
 This example was developed on VISI of 4D Workshop IDE, and tested on the Gen4-uLCD-32DT (https://www.4dsystems.com.au/product/gen4_uLCD_32D/). This intelligent display implements the Diablo16 processor. Running this code requires some specific Diablo16 internal functions and may not be compatible with other graphic processors of 4D Systems. 
@@ -12,12 +12,18 @@ You can watch the working example on the following link:
 https://www.youtube.com/watch?v=P9TaRjac6ZE
 
 ### Prerequisites
-- Gen4-uLCD-32DT or any other Diablo16 based display
+- Gen4-uLCD-35DCT-CLB or any other Diablo16 based display
+- MOTG-RS485 shield connected on screen using FFC cable
+  | Pin   |      Symbol      |  Description |
+  |----------|:-------------:|:------|
+  | 3 |  TX | Asynchronous Serial Receive Pin connected to PA3 of gen4 Display Module |
+  | 4 |    RX   |   Asynchronous Serial Transmit Pin connected to PA2 of the gen4 Display Module |
+  | 5 | GPIO5 |    GPIO Pin connected to PA6 of the Display - Controls communication direction, __High__: Transmit, __Low__: Receive |
 - Programming interface Gen4-PA 
-- Modbus slave device. I recommend a Modbus PLC emulator (http://www.plcsimulator.org/) for your first test.
+- Modbus slave device. Tested Modbus Slave Simulator: https://sourceforge.net/projects/pymodslave/ .
 
 ### Testing
-- Connect your Gen4-uLCD-32DT to your computer using the programming interface. 
+- Connect your Gen4-uLCD-35DCT-CLB to your computer using the programming interface. 
 - Set Mobus parameters in source code:
 
 ```

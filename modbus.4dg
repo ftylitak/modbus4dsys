@@ -1,4 +1,4 @@
-#platform "Gen4-uLCD-32DT"
+#platform "Gen4-uLCD-35DCT-CLB"
  /*
  * @file     modbus
  * @version     1.0
@@ -36,7 +36,7 @@
  *
  */
 
-#platform "Gen4-uLCD-32DT"
+#platform "Gen4-uLCD-35DCT-CLB"
 
 #inherit "4DGL_16bitColours.fnc"
 
@@ -53,11 +53,11 @@
  //********* MODBUS STRUCTURES AND CONSTANTS ***************//
  //Initialization parameters
 #CONST
-  SERIAL:=0; //serial port to USE  0 for defualt port , 1 for serial port 1
-  SLAVE_ADDRESS :=1; // it could be set here or in each telegram
+  SERIAL:=1; //serial port to USE  0 for defualt port , 1 for serial port 1
+  SLAVE_ADDRESS:= 80; // it could be set here or in each telegram
   MOD_TIMEOUT := 3000; //  timeout read/write modbus in ms
   MOD_POOL_T := 350; // pooling time period modbus in ms
-  MOD_BAUDRATE := 960; // 9600/10 this is the value required by diablo
+  MOD_BAUDRATE := 11520; // 9600/10 this is the value required by diablo
 
 #END
 
@@ -146,7 +146,7 @@ MAX_BUFFER := 64;       //!< maximum size for the communication buffer in bytes
 
 //base address and ofssets
 #CONST
-    BASE_RHOLD:=0;
+    BASE_RHOLD:=50;
     BASE_COILS:=0;
 #END
 
@@ -231,6 +231,10 @@ var i, status, n, x,y;
  * @ingroup init
 */
 
+func ModbusTXEndEvent()
+    pin_LO(PA6);
+endfunc
+
 func ModbusInit(var pin)
        //serial port initialization
   #IF  (SERIAL == 1)
@@ -238,6 +242,7 @@ func ModbusInit(var pin)
     COM1_TX_pin(PA3);
     com1_Init(bufferRX,MAX_BUFFER,0);
     com1_TXbuffer(bufferTX, MAX_BUFFER,pin);
+    com1_TXemptyEvent(ModbusTXEndEvent);
     com_SetBaud(COM1, MOD_BAUDRATE);
   #ELSE
 
@@ -246,6 +251,8 @@ func ModbusInit(var pin)
     com_SetBaud(COM0, MOD_BAUDRATE);
 
   #ENDIF
+
+    pin_Set(PIN_OUT, PA6);            // set pin to required mode(OUTPUT, PA6);
 
     Modu8lastRec:=0;
     Modu8BufferSize:=0;
@@ -380,6 +387,7 @@ func ModSendTxBuffer()
   var i := 0;
   var p;
 
+  pin_HI(PA6);                    // set pin to logic '1'(OUTPUT, PA6);
   p:=str_Ptr(Modau8Buffer);
 
   var crc ;
@@ -397,7 +405,7 @@ func ModSendTxBuffer()
      //com_Init(bufferRX,MAX_BUFFER,0);
      com_TXblock(str_Ptr(Modau8Buffer), Modu8BufferSize);
   #ENDIF
-   Modu8BufferSize := 0;
+  Modu8BufferSize := 0;
   // set time-out for master
 
   sys_SetTimer(TIMER1, Modu16timeOut);
@@ -439,7 +447,7 @@ func ModPoll()
   txt_FontID(FONT_2);
   txt_FGcolour(YELLOW) ;
   txt_BGcolour(RED) ;
-   txt_MoveCursor(0,0);
+  txt_MoveCursor(0,0);
 
    if(sys_GetTimer(TIMER1)==0) //  timeout ocurred
 
@@ -472,7 +480,8 @@ func ModPoll()
 
     //print(i8state);
     if (i8state < 6)  ///7 was incorrect for functions 1 and 2 the smallest frame could be 6 bytes long
-         print("COM:Error");
+         print("COM:Error ");
+         print(i8state);
         Modu8state := COM_IDLE;
         Modu16errCnt++;
         return i8state;
@@ -640,7 +649,7 @@ func  main()
 
 
     touch_Set(TOUCH_ENABLE);
-    gfx_Set(SCREEN_MODE,LANDSCAPE) ;
+    gfx_Set(SCREEN_MODE,PORTRAIT) ;
     putstr("Mounting...\n");
     if (!(file_Mount()))
         while(!(file_Mount()))
@@ -728,7 +737,7 @@ func Form1()
     img_SetAttributes(hndl, iLeddigitsTemp3, I_TOUCH_DISABLE);
     img_Show(hndl, iLeddigitsTemp4);  // show all digits at 0, only do this once
     img_SetAttributes(hndl, iLeddigitsTemp4, I_TOUCH_DISABLE);
-
+    
 
     // Winbutton1 1.0 generated 8/17/2018 2:50:15 AM
     img_ClearAttributes(hndl, iWinbutton1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once

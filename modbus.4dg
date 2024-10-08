@@ -212,7 +212,15 @@ func Form1()
              //modbus machine state
 
 
-
+       u8state := ModbusClientPoll();
+       if(u8state > 6)
+            print("read data!")  ;
+            ledDigitsDisplay(au16data[0], iLeddigitsTemp1+1, 28, 4, 2, 25, 1) ;
+            ledDigitsDisplay(au16data[1], iLeddigitsTemp2+1, 28, 4, 2, 25, 1) ;
+            ledDigitsDisplay(au16data[2], iLeddigitsTemp3+1, 202, 4, 2, 25, 1) ;
+            ledDigitsDisplay(au16data[3], iLeddigitsTemp4+1, 202, 4, 2, 25, 1) ;
+       endif
+                    /*
        switch(u8state)
 
         case 0:
@@ -221,11 +229,11 @@ func Form1()
             endif
             break;
         case 1:
-            ModQuery(telegram1);
+            //ModQuery(telegram1);
             u8state++;
             break;
         case 2:
-            exception:= ModPoll();  // checks for response from slave
+//            exception:= ModPoll();  // checks for response from slave
             if(Modu8state==COM_IDLE)  //verify modbus communication state COM_IDLE means that response was received
               u8state:=0;
               if (exception>0) // if there is no exception on response, then update screen with data from Modbus slave
@@ -240,11 +248,11 @@ func Form1()
             endif
             break;
         case 3:
-            ModQuery(telegram2); //writing coil
+            //ModQuery(telegram2); //writing coil
             u8state:=5;
             break;
         case 4:
-            ModQuery(telegram3); //writing holding register
+            //ModQuery(telegram3); //writing holding register
             u8state:=5;
             break;
         case 5:
@@ -256,6 +264,7 @@ func Form1()
             break;
 
        endswitch
+       */
     forever
 
 exit:

@@ -716,7 +716,26 @@ endfunc
 
 func process_FC6()
     //MB_FC_WRITE_REGISTER           = 6,    /*!< FCT=6 -> write single register */
-    return 0 ;
+    var p;
+    p:= str_Ptr(Modau8Buffer);
+
+    var u8add := 0;
+    u8add := ByteSwap(str_GetWord(p + ADD_HI)); //word( au8Buffer[ ADD_HI ], au8Buffer[ ADD_LO ] );
+
+    var u8CopyBufferSize;
+
+    var u16val := 0;
+    u16val := ByteSwap(str_GetWord(p + NB_HI));// word( au8Buffer[ NB_HI ], au8Buffer[ NB_LO ] );
+
+    au16data[ u8add ] := u16val;
+
+    // keep the same header
+    Modu8BufferSize         := RESPONSE_SIZE;
+
+    u8CopyBufferSize := Modu8BufferSize +2;
+    ModSendTxBuffer();
+
+    return u8CopyBufferSize;
 endfunc
 
 func process_FC15()
@@ -726,5 +745,29 @@ endfunc
 
 func process_FC16()
     //MB_FC_WRITE_MULTIPLE_REGISTERS = 16    /*!< FCT=16 -> write multiple registers */
+    //uint8_t u8StartAdd = au8Buffer[ ADD_HI ] << 8 | au8Buffer[ ADD_LO ];
+    //uint8_t u8regsno = au8Buffer[ NB_HI ] << 8 | au8Buffer[ NB_LO ];
+    //uint8_t u8CopyBufferSize;
+    //uint8_t i;
+    //uint16_t temp;
+
+    // build header
+    //au8Buffer[ NB_HI ]   = 0;
+    //au8Buffer[ NB_LO ]   = u8regsno;
+    //u8BufferSize         = RESPONSE_SIZE;
+
+    // write registers
+    //for (i = 0; i < u8regsno; i++)
+    //{
+    //    temp = word(
+    //               au8Buffer[ (BYTE_CNT + 1) + i * 2 ],
+    //               au8Buffer[ (BYTE_CNT + 2) + i * 2 ]);
+    //
+    //    regs[ u8StartAdd + i ] = temp;
+    //}
+    //u8CopyBufferSize = u8BufferSize +2;
+    //sendTxBuffer();
+
+    //return u8CopyBufferSize;
    return 0 ;
 endfunc

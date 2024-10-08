@@ -456,23 +456,23 @@ func ModPoll()
      // process answer
     switch( str_GetByte(p+FUNC) )
 
-    case MB_FC_READ_COILS:
-    case MB_FC_READ_DISCRETE_INPUT:
-        // call get_FC1 to transfer the incoming message to au16regs buffer
-        ModGet_FC1( );
-        break;
-    case MB_FC_READ_INPUT_REGISTER:
-    case MB_FC_READ_REGISTERS :
-        // call get_FC3 to transfer the incoming message to au16regs buffer
-        ModGet_FC3( );
-        break;
-    case MB_FC_WRITE_COIL:
-    case MB_FC_WRITE_REGISTER :
-    case MB_FC_WRITE_MULTIPLE_COILS:
-    case MB_FC_WRITE_MULTIPLE_REGISTERS :
-        // nothing to do
-        break;
-    default:
+        case MB_FC_READ_COILS:
+        case MB_FC_READ_DISCRETE_INPUT:
+            // call get_FC1 to transfer the incoming message to au16regs buffer
+            ModGet_FC1( );
+            break;
+        case MB_FC_READ_INPUT_REGISTER:
+        case MB_FC_READ_REGISTERS :
+            // call get_FC3 to transfer the incoming message to au16regs buffer
+            ModGet_FC3( );
+            break;
+        case MB_FC_WRITE_COIL:
+        case MB_FC_WRITE_REGISTER :
+        case MB_FC_WRITE_MULTIPLE_COILS:
+        case MB_FC_WRITE_MULTIPLE_REGISTERS :
+            // nothing to do
+            break;
+        default:
         break;
     endswitch
     Modu8state := COM_IDLE;
@@ -563,16 +563,16 @@ func ModGetRxBuffer()
     var p;
     Modu8BufferSize:=0;
     p:= str_Ptr(Modau8Buffer);
-    #IF (SERIAL==1)
+#IF (SERIAL==1)
     while(com1_Count())
             str_PutByte(p+Modu8BufferSize,serin1());
-    #ELSE
-      while(com_Count())
+#ELSE
+    while(com_Count())
             str_PutByte(p+Modu8BufferSize,serin());
-    #ENDIF
+#ENDIF
             Modu8BufferSize++;
             if (Modu8BufferSize >= MAX_BUFFER)
-            bBuffOverflow := TRUE;
+                bBuffOverflow := TRUE;
             endif
     wend
 
@@ -583,4 +583,148 @@ func ModGetRxBuffer()
     endif
     return Modu8BufferSize;
 
+endfunc
+
+/**
+ * @brief
+ * *** Only for Modbus Slave ***
+ * This method checks if there is any incoming query
+ * Afterwards, it would shoot a validation routine plus a register query
+ * Avoid any delay() function !!!!
+ * After a successful frame between the Master and the Slave, the time-out timer is reset.
+ *
+ * @param *regs  register table for communication exchange
+ * @param u8size  size of the register table
+ * @return 0 if no query, 1..4 if communication error, >4 if correct query processed
+ * @ingroup loop
+ */
+func ModbusClientPoll( )
+//    au16regs = regs;
+    //u8regsize = u8size;
+
+   var u8current;
+   //get the number of received bytes
+
+#IF  (SERIAL == 1)
+    u8current:=com1_Count();
+
+#ELSE
+     u8current:=com_Count();
+
+#ENDIF
+
+//  txt_FontID(FONT_2);
+//  txt_FGcolour(YELLOW) ;
+//  txt_BGcolour(RED) ;
+//  txt_MoveCursor(0,0);
+
+   if (u8current == 0)
+       //print("No bytes");
+        return 0; // no bytes received
+   endif
+
+   // check T35 after frame end or still no frame end
+    if (u8current != Modu8lastRec)
+        Modu8lastRec := u8current;
+        sys_SetTimer(TIMER2, T35);
+        return 0;
+    endif
+
+    if(sys_GetTimer(TIMER2)>0)
+         return 0;
+    endif
+
+      // transfer Serial buffer frame to auBuffer
+    //print(Modu8lastRec);
+    Modu8lastRec := 0;
+    var i8state;
+    i8state:= ModGetRxBuffer();
+
+    //print(i8state);
+    //if (i8state < 6)  ///7 was incorrect for functions 1 and 2 the smallest frame could be 6 bytes long
+    if (i8state < 7)
+         print("COM:Error ");
+         print(i8state);
+        //Modu8state := COM_IDLE;
+        Modu16errCnt++;
+        return i8state;
+    endif
+
+    var p;
+    p:=str_Ptr(Modau8Buffer);
+
+    // check slave id
+    if (str_GetByte(p + ID) != SLAVE_ADDRESS) return 0;
+
+    // validate message: id, CRC, FCT, exception
+    var u8exception;
+    u8exception :=  ModValidateAnswer();
+
+    if (u8exception != 0)
+        print("COM:Excep.");
+        Modu8state := COM_IDLE;
+        return u8exception;
+    endif
+
+    //u32timeOut = millis();
+    //u8lastError = 0;
+
+    // process message
+    switch( str_GetByte(p+FUNC) )
+        case MB_FC_READ_COILS:
+        case MB_FC_READ_DISCRETE_INPUT:
+            return process_FC1( );
+            break;
+        case MB_FC_READ_INPUT_REGISTER:
+        case MB_FC_READ_REGISTERS :
+            return process_FC3( );
+            break;
+        case MB_FC_WRITE_COIL:
+            return process_FC5( );
+            break;
+        case MB_FC_WRITE_REGISTER :
+            return process_FC6( );
+            break;
+        case MB_FC_WRITE_MULTIPLE_COILS:
+            return process_FC15( );
+            break;
+        case MB_FC_WRITE_MULTIPLE_REGISTERS :
+            return process_FC16( );
+            break;
+        default:
+        break;
+    endswitch
+    return i8state;
+endfunc
+
+func process_FC1()
+    //MB_FC_READ_COILS               = 1,    /*!< FCT=1 -> read coils or digital outputs */
+    //MB_FC_READ_DISCRETE_INPUT      = 2,    /*!< FCT=2 -> read digital inputs */
+    return 0;
+endfunc
+
+func process_FC3()
+    //MB_FC_READ_REGISTERS           = 3,    /*!< FCT=3 -> read registers or analog outputs */
+    //MB_FC_READ_INPUT_REGISTER      = 4,    /*!< FCT=4 -> read analog inputs */
+    return 0;
+endfunc
+
+func process_FC5()
+    //MB_FC_WRITE_COIL               = 5,    /*!< FCT=5 -> write single coil or output */
+    return 0;
+endfunc
+
+func process_FC6()
+    //MB_FC_WRITE_REGISTER           = 6,    /*!< FCT=6 -> write single register */
+    return 0 ;
+endfunc
+
+func process_FC15()
+    //MB_FC_WRITE_MULTIPLE_COILS     = 15,    /*!< FCT=15 -> write multiple coils or outputs */
+    return 0  ;
+endfunc
+
+func process_FC16()
+    //MB_FC_WRITE_MULTIPLE_REGISTERS = 16    /*!< FCT=16 -> write multiple registers */
+   return 0 ;
 endfunc

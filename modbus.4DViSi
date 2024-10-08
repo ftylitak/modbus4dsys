@@ -1,7 +1,8 @@
 ﻿Version     0.0
-Platform    Gen4-uLCD-32DT-L
-PlatRes     240x320
+Platform    Gen4-uLCD-35DCT-CLB-P
+PlatRes     320x480
 Depends
+    modbus_lib.fnc
 end
 Options
     Visualizer
@@ -15,6 +16,19 @@ Options
     SndBuf                       0
     ButtonDisable                No
     SignedDigits                 Yes
+    MaxString                    75
+    ComPort                      0
+    ComTX1pinIdx                 0
+    ComRX1pinIdx                 0
+    FileSystem                   FATfs
+    FlashEraseOption             Optimal
+    SPIenable                    0
+    SPIsdo                       3
+    SPIsdi                       2
+    SPIsck                       1
+    ForceProgramFlash            No
+    PixxiuSDSpeed                0
+    FlashForceLT16MB             No
 end
 Form
     Name                         Form1

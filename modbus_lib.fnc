@@ -706,7 +706,29 @@ endfunc
 func process_FC3()
     //MB_FC_READ_REGISTERS           = 3,    /*!< FCT=3 -> read registers or analog outputs */
     //MB_FC_READ_INPUT_REGISTER      = 4,    /*!< FCT=4 -> read analog inputs */
-    return 0;
+    var p;
+    p:= str_Ptr(Modau8Buffer);
+
+    var u8StartAdd := 0;
+    u8StartAdd := ByteSwap(str_GetWord(p + ADD_HI)); //word( au8Buffer[ ADD_HI ], au8Buffer[ ADD_LO ] );
+
+    var u8regsno := 0;
+    u8regsno := ByteSwap(str_GetWord(p + NB_HI));// word( au8Buffer[ NB_HI ], au8Buffer[ NB_LO ] );
+
+    var u8CopyBufferSize;
+
+    p[ 2 ] := u8regsno * 2;
+    Modu8BufferSize := 3;
+
+    for (i := u8StartAdd; i < u8StartAdd + u8regsno; i++)
+        p[ Modu8BufferSize ] := HIbyte(au16data[i]);
+        Modu8BufferSize++;
+        p[ Modu8BufferSize ] := LObyte(au16data[i]);
+        Modu8BufferSize++;
+    next
+    u8CopyBufferSize := Modu8BufferSize +2;
+    ModSendTxBuffer();
+    return u8CopyBufferSize;
 endfunc
 
 func process_FC5()

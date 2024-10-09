@@ -214,7 +214,6 @@ func Form1()
 
        u8state := ModbusClientPoll();
        if(u8state > 6)
-            print("read data!")  ;
             ledDigitsDisplay(au16data[0], iLeddigitsTemp1+1, 28, 4, 2, 25, 1) ;
             ledDigitsDisplay(au16data[1], iLeddigitsTemp2+1, 28, 4, 2, 25, 1) ;
             ledDigitsDisplay(au16data[2], iLeddigitsTemp3+1, 202, 4, 2, 25, 1) ;

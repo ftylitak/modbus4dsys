@@ -151,24 +151,24 @@ func Form1()
 
 
     // Winbutton1 1.0 generated 8/17/2018 2:50:15 AM
-    img_ClearAttributes(hndl, iWinbutton1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
-    img_Show(hndl, iWinbutton1);  // show button, only do this once
-    img_SetWord(hndl, iWinbutton1, IMAGE_INDEX, state); // where state is 0 for up and 1 for down
-    img_Show(hndl,iWinbutton1) ;
+    //img_ClearAttributes(hndl, iWinbutton1, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+    //img_Show(hndl, iWinbutton1);  // show button, only do this once
+    //img_SetWord(hndl, iWinbutton1, IMAGE_INDEX, state); // where state is 0 for up and 1 for down
+    //img_Show(hndl,iWinbutton1) ;
 
 
     // Winbutton2 1.0 generated 8/17/2018 2:50:28 AM
-    img_ClearAttributes(hndl, iWinbutton2, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
-    img_Show(hndl, iWinbutton2);  // show button, only do this once
-    img_SetWord(hndl, iWinbutton2, IMAGE_INDEX, state); // where state is 0 for up and 1 for down
-    img_Show(hndl,iWinbutton2) ;
+    //img_ClearAttributes(hndl, iWinbutton2, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+    //img_Show(hndl, iWinbutton2);  // show button, only do this once
+    //img_SetWord(hndl, iWinbutton2, IMAGE_INDEX, state); // where state is 0 for up and 1 for down
+    //img_Show(hndl,iWinbutton2) ;
 
 
     // Winbutton3 1.0 generated 8/17/2018 2:50:38 AM
-    img_ClearAttributes(hndl, iWinbutton3, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
-    img_Show(hndl, iWinbutton3);  // show button, only do this once
-    img_SetWord(hndl, iWinbutton3, IMAGE_INDEX, state); // where state is 0 for up and 1 for down
-    img_Show(hndl,iWinbutton3) ;
+    //img_ClearAttributes(hndl, iWinbutton3, I_TOUCH_DISABLE); // set to enable touch, only need to do this once
+    //img_Show(hndl, iWinbutton3);  // show button, only do this once
+    //img_SetWord(hndl, iWinbutton3, IMAGE_INDEX, state); // where state is 0 for up and 1 for down
+    //img_Show(hndl,iWinbutton3) ;
 
 
     repeat

@@ -71,7 +71,7 @@ StaticText
     Alias                        StatictextTemp1
     Alignment                    Left
     AutoSize                     Yes
-    Caption                      'TEMP1 C°'
+    Caption                      Timer
     Color                        BLACK
     Font.Color                   WHITE
     Font.Effects                 []
@@ -82,7 +82,7 @@ StaticText
     Left                         28
     Top                          44
     Transparent                  Yes
-    Width                        72
+    Width                        42
     WordWrap                     Yes
 end
 StaticText
@@ -90,7 +90,7 @@ StaticText
     Alias                        StatictextTemp2
     Alignment                    Left
     AutoSize                     Yes
-    Caption                      'TEMP2 °C'
+    Caption                      'Setpoint °C'
     Color                        BLACK
     Font.Color                   WHITE
     Font.Effects                 []
@@ -101,7 +101,7 @@ StaticText
     Left                         28
     Top                          120
     Transparent                  Yes
-    Width                        72
+    Width                        81
     WordWrap                     Yes
 end
 LedDigits
@@ -128,7 +128,7 @@ StaticText
     Alias                        StatictextTemp3
     Alignment                    Left
     AutoSize                     Yes
-    Caption                      'TEMP3 °C'
+    Caption                      Pulses
     Color                        BLACK
     Font.Color                   WHITE
     Font.Effects                 []
@@ -139,7 +139,7 @@ StaticText
     Left                         202
     Top                          44
     Transparent                  Yes
-    Width                        88
+    Width                        44
     WordWrap                     Yes
 end
 LedDigits
@@ -166,7 +166,7 @@ StaticText
     Alias                        StatictextTemp4
     Alignment                    Left
     AutoSize                     Yes
-    Caption                      'TEMP4 °C'
+    Caption                      'Temp °C'
     Color                        BLACK
     Font.Color                   WHITE
     Font.Effects                 []
@@ -177,7 +177,7 @@ StaticText
     Left                         202
     Top                          119
     Transparent                  Yes
-    Width                        88
+    Width                        64
     WordWrap                     Yes
 end
 LedDigits
@@ -265,18 +265,18 @@ StaticText
     Alias                        Statictext1
     Alignment                    Left
     AutoSize                     Yes
-    Caption                      'Modbus Example'
+    Caption                      'Coffee Maker'
     Color                        BLACK
     Font.Color                   WHITE
     Font.Effects                 []
     Font.Name                    Tahoma
     Font.Size                    12
     Font.Style                   []
-    Height                       21
+    Height                       19
     Left                         96
     Top                          20
     Transparent                  Yes
-    Width                        138
+    Width                        92
     WordWrap                     Yes
 end
 WinButton

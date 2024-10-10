@@ -3,10 +3,10 @@
  //Initialization parameters
 #CONST
   SERIAL:=1; //serial port to USE  0 for default port , 1 for serial port 1 (Use _1_ when SB2 and SB3 on MOTG-RS485 are soldered to RX/TX respectively)
-  SLAVE_ADDRESS:= 1; // it could be set here or in each telegram
+  SLAVE_ADDRESS:= 0x10; // it could be set here or in each telegram
   MOD_TIMEOUT := 3000; //  timeout read/write modbus in ms
   MOD_POOL_T := 350; // pooling time period modbus in ms
-  MOD_BAUDRATE := 11520; // 9600/10 this is the value required by diablo
+  MOD_BAUDRATE := 1920; // 9600/10 this is the value required by diablo
 
 #END
 
@@ -159,7 +159,7 @@ var au16Coils[4]; // data for writing coils
  var Modau8Buffer[MAX_BUFFER];
  var Modu8BufferSize;
  var Modu8lastRec;
- var Modau16regs;  //pointer
+ var *Modau16regs;  //pointer
  var Modu16InCnt, Modu16OutCnt, Modu16errCnt;
  var Modu16timeOut;
  var Modu32time[2], Modu32timeOut[2];
@@ -334,7 +334,7 @@ endfunc
  //function to send the modbus stream
 func ModSendTxBuffer()
   var i := 0;
-  var p;
+  var *p;
 
   pin_HI(PA6);                    // set pin to logic '1'(OUTPUT, PA6);
   p:=str_Ptr(Modau8Buffer);
@@ -429,8 +429,8 @@ func ModPoll()
 
     //print(i8state);
     if (i8state < 6)  ///7 was incorrect for functions 1 and 2 the smallest frame could be 6 bytes long
-         print("COM:Error ");
-         print(i8state);
+         //print("COM:Error ");
+         //print(i8state);
         Modu8state := COM_IDLE;
         Modu16errCnt++;
         return i8state;
@@ -451,7 +451,7 @@ func ModPoll()
     txt_BGcolour(BLACK) ;
     print("COM:ok      ");
 
-    var p;
+    var *p;
     p:=str_Ptr(Modau8Buffer);
      // process answer
     switch( str_GetByte(p+FUNC) )
@@ -483,7 +483,7 @@ endfunc
 
 func ModGet_FC1()
     var uint8_t ,u8byte, i, maxI;
-    var p;
+    var *p;
     u8byte := 3;
      p:=str_Ptr(Modau8Buffer);
 
@@ -560,7 +560,7 @@ endfunc
 
 func ModGetRxBuffer()
     var  bBuffOverflow := FALSE;
-    var p;
+    var *p;
     Modu8BufferSize:=0;
     p:= str_Ptr(Modau8Buffer);
 #IF (SERIAL==1)
@@ -643,6 +643,8 @@ func ModbusClientPoll( )
     //print(i8state);
     //if (i8state < 6)  ///7 was incorrect for functions 1 and 2 the smallest frame could be 6 bytes long
     if (i8state < 7)
+         txt_MoveCursor(0,0);
+         txt_FontID(FONT_2);
          print("COM:Error ");
          print(i8state);
         //Modu8state := COM_IDLE;
@@ -650,7 +652,7 @@ func ModbusClientPoll( )
         return i8state;
     endif
 
-    var p;
+    var *p;
     p:=str_Ptr(Modau8Buffer);
 
     // check slave id
@@ -661,6 +663,8 @@ func ModbusClientPoll( )
     u8exception :=  ModValidateAnswer();
 
     if (u8exception != 0)
+        txt_MoveCursor(0,0);
+        txt_FontID(FONT_2);
         print("COM:Excep.");
         Modu8state := COM_IDLE;
         return u8exception;
@@ -706,7 +710,7 @@ endfunc
 func process_FC3()
     //MB_FC_READ_REGISTERS           = 3,    /*!< FCT=3 -> read registers or analog outputs */
     //MB_FC_READ_INPUT_REGISTER      = 4,    /*!< FCT=4 -> read analog inputs */
-    var p;
+    var *p;
     p:= str_Ptr(Modau8Buffer);
 
     var u8StartAdd := 0;
@@ -738,7 +742,7 @@ endfunc
 
 func process_FC6()
     //MB_FC_WRITE_REGISTER           = 6,    /*!< FCT=6 -> write single register */
-    var p;
+    var *p;
     p:= str_Ptr(Modau8Buffer);
 
     var u8add := 0;
@@ -767,31 +771,26 @@ endfunc
 
 func process_FC16()
     //MB_FC_WRITE_MULTIPLE_REGISTERS = 16    /*!< FCT=16 -> write multiple registers */
-    var p;
+    var *p;
     p:= str_Ptr(Modau8Buffer);
 
     var u8StartAdd := 0;
-    u8StartAdd := ByteSwap(str_GetWord(p + ADD_HI)); //word( au8Buffer[ ADD_HI ], au8Buffer[ ADD_LO ] );
+    u8StartAdd := ByteSwap(str_GetWord(p + ADD_HI));
 
     var u8regsno := 0;
-    u8regsno := ByteSwap(str_GetWord(p + NB_HI));// word( au8Buffer[ NB_HI ], au8Buffer[ NB_LO ] );
+    u8regsno := ByteSwap(str_GetWord(p + NB_HI));
 
     var u8CopyBufferSize;
     var temp;
 
     // build header
-    //au8Buffer[ NB_HI ]   = 0;
     p[ NB_HI ] := 0;
-    //au8Buffer[ NB_LO ]   = u8regsno;
     p[ NB_LO ] := u8regsno;
     Modu8BufferSize := RESPONSE_SIZE;
 
     // write registers
     for (i := 0; i < u8regsno; i++)
         temp := ByteSwap(str_GetWord(p + (BYTE_CNT+ 1) + i * 2));
-        //temp = word(
-        //           au8Buffer[ (BYTE_CNT + 1) + i * 2 ],
-        //           au8Buffer[ (BYTE_CNT + 2) + i * 2 ]);
 
         au16data[ u8StartAdd + i ] := temp;
     next
